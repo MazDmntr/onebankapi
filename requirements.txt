@@ -11,6 +11,7 @@ MarkupSafe==3.0.2
 packaging==25.0
 pluggy==1.6.0
 pytest==8.3.5
+python-dotenv==1.1.0
 SQLAlchemy==2.0.41
 tomli==2.2.1
 typing_extensions==4.13.2
