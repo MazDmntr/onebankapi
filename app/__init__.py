@@ -1,11 +1,15 @@
+
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import os
+from flask_migrate import Migrate
 from dotenv import load_dotenv
 
 load_dotenv()
 
 db = SQLAlchemy()
+migrate = Migrate()
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -17,5 +21,13 @@ def create_app(test_config=None):
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
+    migrate.init_app(app, db)
+ 
+     # Registra todas as rotas
+    from app.routes import register_routes
+    register_routes(app)
+    
+    with app.app_context():
+        db.create_all()
 
     return app
