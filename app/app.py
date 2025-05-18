@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from models.cliente import db, Cliente
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -14,7 +15,14 @@ with app.app_context():
 @app.route('/clientes', methods=['POST'])
 def criar_cliente():
     data = request.get_json()
-    novo_cliente = Cliente(nome=data['nome'], email=data['email'])
+    novo_cliente = Cliente(
+        nome=data['nome'], 
+        email=data['email'],
+        cpf=data['cpf'],
+        telefone=data.get('telefone'),
+        endereco=data.get('endereco'),
+        data_nascimento=datetime.strptime(data.get('data_nascimento'),'%Y-%m-%d')
+    )
     db.session.add(novo_cliente)
     db.session.commit()
     return jsonify(novo_cliente.to_dict()), 201
@@ -38,6 +46,11 @@ def atualizar_cliente(id):
     data = request.get_json()
     cliente.nome = data.get('nome', cliente.nome)
     cliente.email = data.get('email', cliente.email)
+    cliente.cpf = data.get('cpf', cliente.cpf)
+    cliente.telefone = data.get('telefone', cliente.telefone)
+    cliente.endereco = data.get('endereco', cliente.endereco)
+    cliente.data_nascimento = datetime.strptime(data.get('data_nascimento'),'%Y-%m-%d') if data.get('data_nascimento') else cliente.data_nascimento
+    cliente.data_atualizacao = db.func.now()
     db.session.commit()
     return jsonify(cliente.to_dict())
 
